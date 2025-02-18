@@ -1,7 +1,10 @@
 import json
 import os
+from typing import TYPE_CHECKING
 
 from currybot.data import Logger
+if TYPE_CHECKING:  # Prevent circular import at run-time
+    from currybot.bot import CurryBot
 
 
 class Config(object):
@@ -37,7 +40,7 @@ class Config(object):
             json.dump(config, config_file)
 
     @classmethod
-    def load_config(cls, bot):
+    def load_config(cls, bot: "CurryBot"):
         if os.path.exists(cls.config_location):
             with open(cls.config_location, 'r') as config_file:
                 Logger.log_debug('Loading config')

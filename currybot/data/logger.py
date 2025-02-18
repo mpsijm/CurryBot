@@ -1,3 +1,4 @@
+from telegram import Bot
 from telegram.error import TimedOut
 import traceback, sys
 
@@ -13,7 +14,7 @@ class Logger(object):
     _log_handlers = {'console': 0}
 
     @classmethod
-    def init(cls, bot, log_chats={}):
+    def init(cls, bot: Bot, log_chats={}):
         for chat_id in log_chats:
             cls._log_handlers[chat_id] = int(log_chats[chat_id])
 
@@ -49,6 +50,7 @@ class Logger(object):
         (level_str, level_color) = cls._get_level_string(level)
         if (not chat is None) and not console_only:
             line = '*[%s]*\t- %s' % (level_str, msg.replace('_', '\\_'))
+            # TODO Technically, this should be `await`ed, but I don't want to await all log messages everywhere
             cls.bot.send_message(chat_id=chat, text=line, parse_mode='Markdown')
 
         for chat_id in cls._log_handlers:
@@ -61,6 +63,7 @@ class Logger(object):
             elif not console_only:
                 try:
                     line = '*[%s]*\t- %s' % (level_str, msg.replace('_', '\\_'))
+                    # TODO Technically, this should be `await`ed, but I don't want to await all log messages everywhere
                     cls.bot.send_message(chat_id=chat_id, text=line, parse_mode='Markdown')
                 except TimedOut:
                     cls.log_error('Sending log message timed out')

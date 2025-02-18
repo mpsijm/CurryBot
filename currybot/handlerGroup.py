@@ -30,7 +30,7 @@ class HandlerGroup(object):
         if chat in self._handlers:
             self._handlers[chat] = [(name, handler) for (name, handler) in self._handlers[chat] if not name == handler_name]
 
-    def register(self, chat, handler, name):
+    def register(self, chat, handler: MessageHandler, name):
         if handler is None:
             raise Exception('Cannot register None as a handler')
         chat = str(chat)
@@ -40,6 +40,7 @@ class HandlerGroup(object):
             self._handlers[chat].append((name, handler))
         else:
             self._handlers[chat] = [(name, handler)]
+        # TODO Technically, this should be awaited, but then from_dict and Config.load_config should also be async
         handler.update(self._bot)
 
     def update(self):
