@@ -104,7 +104,7 @@ class PercentageFilter(MessageHandler):
 
     async def call(self, bot, message, target, exclude):
         if random.randrange(100) <= self._percentage:
-            return self.propagate(bot, message, target, exclude)
+            return await self.propagate(bot, message, target, exclude)
         else:
             raise FilterException()
 

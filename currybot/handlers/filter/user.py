@@ -13,7 +13,7 @@ class SenderIsBotAdmin(MessageHandler):
         user_id = message.from_user.id
 
         if Cache.is_chat_admin(chat_id, user_id):
-            return self.propagate(bot, message, target, exclude)
+            return await self.propagate(bot, message, target, exclude)
         else:
             raise FilterException()
 

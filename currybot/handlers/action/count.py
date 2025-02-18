@@ -14,7 +14,7 @@ class AbstractCount(MessageHandler):
         self.key = key
 
     # The function that distinguishes between the different subclasses
-    def do_count(self, count):
+    def do_count(self, count) -> int:
         raise Exception('Not implemented')
 
     # Getter for the current count
@@ -32,7 +32,7 @@ class AbstractCount(MessageHandler):
         Cache.put(self.key, new_val)
 
         msg.text = msg.text.replace('%d', str(new_val), 1) if msg.text and '%d' in msg.text else str(new_val)
-        return self.propagate(bot, msg, target, exclude)
+        return await self.propagate(bot, msg, target, exclude)
 
     def has_effect(self):
         return True

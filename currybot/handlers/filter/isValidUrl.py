@@ -13,7 +13,7 @@ class IsValidUrl(MessageHandler):
         response = requests.head(url, allow_redirects=True)
         
         if response.status_code < 400:
-            return self.propagate(bot, message, target, exclude)
+            return await self.propagate(bot, message, target, exclude)
         else:
             raise FilterException()
 

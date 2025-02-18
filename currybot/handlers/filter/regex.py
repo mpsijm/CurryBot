@@ -21,11 +21,11 @@ class AbstractRegexFilter(MessageHandler):
         if match:
             if self._group:
                 message.text = match.group(self._group)
-            return self.propagate(bot, message, target, exclude)
+            return await self.propagate(bot, message, target, exclude)
         else:
             raise FilterException()
 
-    def matcher(self, regex, text):
+    def matcher(self, regex, text) -> re.Match:
         raise Exception('Not implemented')
 
     @classmethod

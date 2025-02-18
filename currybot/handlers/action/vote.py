@@ -13,7 +13,7 @@ class AbstractVote(MessageHandler):
         self.key = key
         self.multivote = multivote
 
-    def do_count(self, count):
+    def do_count(self, count) -> int:
         raise Exception('Not implemented')
 
     def get_votes(self, msg):
@@ -44,7 +44,7 @@ class AbstractVote(MessageHandler):
         res, val = self.apply_vote(msg)
         if res:
             msg.text = msg.text.replace('%d', str(val), 1) if '%d' in msg.text else str(val)
-            return self.propagate(bot, msg, target, exclude)
+            return await self.propagate(bot, msg, target, exclude)
         else:
             raise FilterException()
 
@@ -162,7 +162,7 @@ class GetVote(AbstractVote):
     async def call(self, bot, msg, target, exclude):
         key, (val, users) = self.get_votes(msg)
         msg.text = msg.text.replace('%d', str(val), 1) if '%d' in msg.text else str(val)
-        return self.propagate(bot, msg, target, exclude)
+        return await self.propagate(bot, msg, target, exclude)
 
     @classmethod
     def is_entrypoint(cls):

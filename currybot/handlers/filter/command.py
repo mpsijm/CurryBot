@@ -17,7 +17,7 @@ class IsCommand(MessageHandler):
         if commands:   # TODO: add check if there is no mention of an other bot
             match = re.match(self._command, message.text)
             if match:
-                return self.propagate(bot, message, target, exclude)
+                return await self.propagate(bot, message, target, exclude)
         raise FilterException()
 
     @classmethod

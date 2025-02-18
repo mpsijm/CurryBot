@@ -28,7 +28,7 @@ class ActivityFilter(MessageHandler):
 
         if (last_activity + self.timedelta) <= time:
             Cache.put([self.cache_key, self.type, self.id], time.timestamp())
-            return self.propagate(bot, msg, target, exclude)
+            return await self.propagate(bot, msg, target, exclude)
         else:
             raise FilterException()
 

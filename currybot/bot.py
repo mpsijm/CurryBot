@@ -27,11 +27,11 @@ class SelfJoinedChat(MessageHandler):
             try:
                 next(filter(lambda usr: usr.id == bot.id, message.new_chat_members))
                 message.text = bot.first_name
-                return self.propagate(bot, message, target, exclude)
+                return await self.propagate(bot, message, target, exclude)
             except StopIteration:
                 raise FilterException()
         elif message.group_chat_created or message.supergroup_chat_created or message.channel_chat_created:
-            return self.propagate(bot, message, target, exclude)
+            return await self.propagate(bot, message, target, exclude)
         else:
             raise FilterException()
 

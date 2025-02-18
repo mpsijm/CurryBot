@@ -32,7 +32,7 @@ class SendBehaviour(MessageHandler):
             else:
                 raise Exception('Invalid action id %d' % action)
 
-            exclude.extend(self.propagate(bot, message, target, exclude))
+            exclude.extend(await self.propagate(bot, message, target, exclude))
         return exclude
 
     @classmethod

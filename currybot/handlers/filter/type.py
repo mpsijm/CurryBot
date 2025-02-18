@@ -7,12 +7,12 @@ class AbstractIsType(MessageHandler):
     def __init__(self, children):
         super(AbstractIsType, self).__init__(children)
 
-    def check(self, message):
+    def check(self, message) -> bool:
         raise Exception('Not implemented')
 
     async def call(self, bot, message, target, exclude):
         if self.check(message):
-            return self.propagate(bot, message, target, exclude)
+            return await self.propagate(bot, message, target, exclude)
         else:
             raise FilterException()
 

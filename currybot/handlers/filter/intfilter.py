@@ -33,7 +33,7 @@ class IntFilter(MessageHandler):
 
         if re.match(r'-?[\d]+', message.text):
             if self.condition_lambda(int(message.text)):
-                return self.propagate(bot, message, target, exclude)
+                return await self.propagate(bot, message, target, exclude)
             else:
                 raise FilterException()
         else:

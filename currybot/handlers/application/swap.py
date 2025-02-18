@@ -12,7 +12,7 @@ class AbstractSwap(MessageHandler):
     async def call(self, bot, msg, target, exclude):
         if msg.reply_to_message:
             swapped = self.do_swap(msg)
-            return self.propagate(bot, swapped, target, exclude)
+            return await self.propagate(bot, swapped, target, exclude)
         else:
             raise Exception('Message is not a reply')
 

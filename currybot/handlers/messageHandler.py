@@ -3,21 +3,22 @@ import inspect
 import random
 import string
 import sys
+from typing import Optional
 
 from currybot.configResponse import CreateException
 from currybot.data import Cache, Logger
 
 
 class Handler(object):
-    def __init__(self, children=None):
+    def __init__(self, children: Optional[list["MessageHandler"]] = None):
         if children is None:
-            self.children = []
+            self.children: list["MessageHandler"] = []
         elif isinstance(children, list):
             self.children = children
         else:
             self.children = [children]
 
-    def extend_children(self, new_children):
+    def extend_children(self, new_children: "MessageHandler | list[MessageHandler]"):
         if not isinstance(new_children, list):
             new_children = [new_children]
 
@@ -27,13 +28,13 @@ class Handler(object):
     async def update(self, bot):
         await self.on_update(bot)
         for child in self.children:
-            child.update(bot)
+            await child.update(bot)
 
-    def propagate(self, bot, message, target, exclude):
+    async def propagate(self, bot, message, target, exclude):
         res = []
         do_copy = len(self.children) > 1
         for child in self.children:
-            res2 = child.call(bot, copy.copy(message) if do_copy else message, target, copy.copy(exclude) if do_copy else exclude)
+            res2 = await child.call(bot, copy.copy(message) if do_copy else message, target, copy.copy(exclude) if do_copy else exclude)
             if res2 is None:
                 Logger.log_error(msg='Handler %s returned None instead of [..]' % type(child).__name__, chat=message.chat.id)
             else:

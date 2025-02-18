@@ -35,7 +35,7 @@ class TimeFilter(MessageHandler):
             and ((self.monthweek is None) or self.monthweek == self.calc_monthweek(time))
             and ((self.year      is None) or self.year      == time.year)
            ):
-            return self.propagate(bot, message, target, exclude)
+            return await self.propagate(bot, message, target, exclude)
         else:
             raise FilterException()
 
