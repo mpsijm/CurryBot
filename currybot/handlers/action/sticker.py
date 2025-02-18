@@ -1,3 +1,4 @@
+from telegram import Bot
 from currybot.configResponse import Send, Done, CreateException
 from currybot.handlers.messageHandler import RandomMessageHandler
 
@@ -14,13 +15,13 @@ class SendStickerPack(RandomMessageHandler):
         super(SendStickerPack, self).__init__(RandomMessageHandler.get_random_id(), [])
         self.pack_id = pack_id
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         (id, sticker_id) = self.select_random_option(exclude=exclude)
-        bot.send_sticker(chat_id=message.chat.id, sticker=sticker_id, reply_to_message_id=target)
+        await bot.send_sticker(chat_id=message.chat.id, sticker=sticker_id, reply_to_message_id=target)
         return [id]
 
-    def on_update(self, bot):
-        stickerpack = bot.get_sticker_set(self.pack_id)
+    async def on_update(self, bot: Bot):
+        stickerpack = await bot.get_sticker_set(self.pack_id)
         stickers = list(map(lambda x: x.file_id, stickerpack.stickers))
         self.clear()
         self.add_options(stickers)
@@ -64,9 +65,9 @@ class SendStickers(RandomMessageHandler):
         super(SendStickers, self).__init__(RandomMessageHandler.get_random_id(), [])
         self.add_options(stickers)
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         (id, sticker_id) = self.select_random_option(exclude=exclude)
-        bot.send_sticker(chat_id=msg.chat.id, sticker=sticker_id, reply_to_message_id=target)
+        await bot.send_sticker(chat_id=msg.chat.id, sticker=sticker_id, reply_to_message_id=target)
         return [id]
 
     def has_effect(self):

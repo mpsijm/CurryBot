@@ -34,7 +34,7 @@ class AbstractSendMessage(RandomMessageHandler):
 
         return reply_text
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         if msg.text is None:
             msg.text = ''
 
@@ -47,7 +47,7 @@ class AbstractSendMessage(RandomMessageHandler):
         else:
             buttons = None
 
-        bot.send_message(chat_id=msg.chat.id,
+        await bot.send_message(chat_id=msg.chat.id,
                          text=applied_message,
                          reply_to_message_id=target,
                          parse_mode=self.parse_mode,

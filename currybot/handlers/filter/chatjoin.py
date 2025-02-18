@@ -7,7 +7,7 @@ class UserJoinedChat(MessageHandler):
     def __init__(self, children):
         super(UserJoinedChat, self).__init__(children)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         if message.new_chat_members:
             res = []
             for member in message.new_chat_members:

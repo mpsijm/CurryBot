@@ -14,7 +14,7 @@ class SendBehaviour(MessageHandler):
         self.forward = forward
 
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         if message.reply_to_message:
             behaviour = self.reply
         elif message.forward_from:

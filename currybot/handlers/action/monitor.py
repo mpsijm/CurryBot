@@ -12,11 +12,11 @@ class ActivityMonitor(MessageHandler):
         self.log_user = log_user
         self.log_chat = log_chat
 
-    def on_update(self, bot):
+    async def on_update(self, bot):
         if not Cache.contains(self.cache_key):
             Cache.put(self.cache_key, {})
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         time = datetime.now().timestamp()
         if self.log_chat:
             chat_id = str(message.chat.id)

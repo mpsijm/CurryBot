@@ -23,7 +23,7 @@ class TimeFilter(MessageHandler):
         first_day_of_this_week = date.day - day
         return 1 + (first_day_of_this_week // 7)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         time = message.date
         if (
                 ((self.minute    is None) or self.minute    == time.minute)

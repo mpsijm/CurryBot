@@ -42,12 +42,12 @@ class SendRSS(MessageHandler):
         else:
             return (id, item)
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         (id, item) = self.select_item(exclude)
         if item is None:
             return []
         text = self.build_text(item)
-        bot.send_message(chat_id=msg.chat.id, text=text, reply_to_message_id=target)
+        await bot.send_message(chat_id=msg.chat.id, text=text, reply_to_message_id=target)
         return [id]
 
     def has_effect(self):

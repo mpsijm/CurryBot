@@ -8,13 +8,13 @@ class Pin(MessageHandler):
         super(Pin, self).__init__([])
         self.do_replace = do_replace
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         if self.do_replace:
             # Check if there is something pinned before unpinning
-            chat = bot.get_chat(msg.chat.id)
+            chat = await bot.get_chat(msg.chat.id)
             if chat.pinned_message:
-                bot.unpin_chat_message(msg.chat.id)
-        bot.pin_chat_message(msg.chat.id, msg.message_id)
+                await bot.unpin_chat_message(msg.chat.id)
+        await bot.pin_chat_message(msg.chat.id, msg.message_id)
         return []
 
     @classmethod

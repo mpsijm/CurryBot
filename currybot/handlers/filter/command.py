@@ -12,7 +12,7 @@ class IsCommand(MessageHandler):
         super(IsCommand, self).__init__(children)
         self._command = cmd
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         commands = [e for e in message.entities if e.type == MessageEntity.BOT_COMMAND]
         if commands:   # TODO: add check if there is no mention of an other bot
             match = re.match(self._command, message.text)

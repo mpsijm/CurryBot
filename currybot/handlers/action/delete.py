@@ -6,8 +6,8 @@ class Delete(MessageHandler):
     def __init__(self):
         super(Delete, self).__init__([])
 
-    def call(self, bot, msg, target, exclude):
-        bot.delete_message(msg.chat.id, msg.message_id)
+    async def call(self, bot, msg, target, exclude):
+        await bot.delete_message(msg.chat.id, msg.message_id)
         return []
 
     @classmethod

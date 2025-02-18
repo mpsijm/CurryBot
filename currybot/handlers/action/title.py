@@ -6,8 +6,8 @@ class SetTitle(MessageHandler):
     def __init__(self):
         super(SetTitle, self).__init__([])
 
-    def call(self, bot, msg, target, exclude):
-        bot.set_chat_title(msg.chat.id, msg.text)
+    async def call(self, bot, msg, target, exclude):
+        await bot.set_chat_title(msg.chat.id, msg.text)
         return []
 
     @classmethod

@@ -13,7 +13,7 @@ class AbstractRegexFilter(MessageHandler):
         self._regex = re.compile(regex)
         self._group = group
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         if message.text is None:
             raise FilterException()
 

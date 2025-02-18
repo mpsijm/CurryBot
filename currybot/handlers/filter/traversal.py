@@ -9,7 +9,7 @@ class Try(MessageHandler):
     def __init__(self, children):
         super(Try, self).__init__(children)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         for child in self.children:
             try:
                 return child.call(bot, message, target, copy.copy(exclude))

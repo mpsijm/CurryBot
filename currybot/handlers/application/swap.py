@@ -9,7 +9,7 @@ class AbstractSwap(MessageHandler):
     def do_swap(self, msg):
         raise Exception('do_swap not implemented')
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         if msg.reply_to_message:
             swapped = self.do_swap(msg)
             return self.propagate(bot, swapped, target, exclude)

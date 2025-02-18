@@ -8,7 +8,7 @@ class SenderIsBotAdmin(MessageHandler):
     def __init__(self, children):
         super(SenderIsBotAdmin, self).__init__(children)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         chat_id = message.chat.id
         user_id = message.from_user.id
 
@@ -51,7 +51,7 @@ class IsFrom(MessageHandler):
         super(IsFrom, self).__init__(children)
         self.user_id = user_id
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         if self.user_id == message.from_user.id:
             return self.propagate(bot, message, target, exclude)
         else:

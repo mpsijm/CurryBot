@@ -26,7 +26,7 @@ class AbstractCount(MessageHandler):
             return int(out)
 
     # When called, we get the count, apply the modifier and return the result
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         val = self.get_count()
         new_val = self.do_count(val)
         Cache.put(self.key, new_val)

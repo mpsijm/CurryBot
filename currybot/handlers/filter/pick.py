@@ -16,7 +16,7 @@ class PickWeighted(MessageHandler):
             self.size += weight
         super(PickWeighted, self).__init__(children)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         rand = random.randrange(self.size)
         for index, weight in enumerate(self.weights):
             if rand <= weight:
@@ -64,7 +64,7 @@ class PickUniform(MessageHandler):
     def __init__(self, children):
         super(PickUniform, self).__init__(children)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         index = random.randrange(len(self.children))
         return self.children[index].call(bot, message, target, exclude)
 
@@ -102,7 +102,7 @@ class PercentageFilter(MessageHandler):
         super(PercentageFilter, self).__init__(children)
         self._percentage = int(percentage)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         if random.randrange(100) <= self._percentage:
             return self.propagate(bot, message, target, exclude)
         else:

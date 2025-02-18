@@ -7,9 +7,9 @@ class UrlButton(MessageHandler):
         super(UrlButton, self).__init__([])
         self.text = button_text
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         buttons = InlineKeyboardMarkup([[InlineKeyboardButton(text=self.text, url=msg.text)]])
-        bot.send_message(chat_id=msg.chat.id,
+        await bot.send_message(chat_id=msg.chat.id,
                          text='🔎',
                          reply_to_message_id=target,
                          reply_markup=buttons)

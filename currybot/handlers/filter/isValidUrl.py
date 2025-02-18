@@ -8,7 +8,7 @@ class IsValidUrl(MessageHandler):
     def __init__(self, children):
         super(IsValidUrl, self).__init__(children)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         url = message.text if re.match('https?://', message.text) else 'http://%s' % message.text
         response = requests.head(url, allow_redirects=True)
         

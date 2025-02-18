@@ -15,10 +15,10 @@ class Forward(MessageHandler):
         self.chat_id = chat_id
         self.msg_id = msg_id
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         if target:
             raise Exception('You cannot reply using a forwarded message')
-        bot.forward_message(chat_id=msg.chat.id, from_chat_id=self.chat_id, message_id=self.msg_id)
+        await bot.forward_message(chat_id=msg.chat.id, from_chat_id=self.chat_id, message_id=self.msg_id)
         return [self.msg_id]
 
     @classmethod

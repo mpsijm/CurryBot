@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 import traceback
 
-from telegram.ext import Application, Updater, filters, CallbackQueryHandler
+from telegram import Bot, Chat, Message, Update
+from telegram.ext import Application, CallbackContext, Updater, filters, CallbackQueryHandler
 from telegram.ext import MessageHandler as TelegramMessageHandler
-from telegram import Chat, Message
 
 from currybot.data import Logger, Cache
 from currybot.config import Config
@@ -22,7 +22,7 @@ class SelfJoinedChat(MessageHandler):
     def __init__(self, children):
         super(SelfJoinedChat, self).__init__(children)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         if message.new_chat_members:
             try:
                 next(filter(lambda usr: usr.id == bot.id, message.new_chat_members))
@@ -41,7 +41,7 @@ class Migrate(MessageHandler):
         super(Migrate, self).__init__([])
         self._bot = bot
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         if message.migrate_from_chat_id:
             old_id = str(message.migrate_from_chat_id)
             new_id = str(message.chat.id)
@@ -61,18 +61,19 @@ class CurryBot(object):
         Initialize CurryBot
         """
         self.admin_chat = admin_chat
-        self.bot = None
-        self.updater = None
-        self.dispatcher = None
+        self.bot: Bot = None
+        self.updater: Updater = None
+        self.application: Application = None
 
         self._global_message_handlers = {}
-        self.message_handlers = None
-        self.tick_handlers    = None
-        self.button_handlers  = None
+        self.message_handlers: HandlerGroup = None
+        self.tick_handlers   : HandlerGroup = None
+        self.button_handlers : HandlerGroup = None
 
     def set_token(self, token):
-        self.app = Application.builder().token(token).post_shutdown(lambda _: self.on_exit()).build()
-        self.updater = self.app.updater
+        self.application = Application.builder().token(token).post_shutdown(lambda _: self.on_exit()).build()
+        assert self.application.updater is not None
+        self.updater = self.application.updater
         # self.updater = Updater(token, user_sig_handler=lambda s, f, self=self: self.on_exit())
 
         self.bot = self.updater.bot
@@ -81,11 +82,17 @@ class CurryBot(object):
         self.tick_handlers    = HandlerGroup(self.bot)
         self.button_handlers  = HandlerGroup(self.bot)
 
-        self.app.add_handler(ConfigConversation(self).get_conversation_handler())
-        self.app.add_handler(CallbackQueryHandler(
-                            (lambda bot, update, self=self: self.on_receive_callback(bot, update))))
-        self.app.add_handler(TelegramMessageHandler(filters.ALL,
-                            (lambda bot, update, self=self: self.on_receive(bot, update))))
+        self.application.add_handler(ConfigConversation(self).get_conversation_handler())
+
+        async def query_callback(update: Update, context: CallbackContext):
+            await self.on_receive_callback(context.bot, update)
+
+        self.application.add_handler(CallbackQueryHandler(query_callback))
+
+        async def message_handler(update: Update, context: CallbackContext):
+            await self.on_receive(context.bot, update)
+
+        self.application.add_handler(TelegramMessageHandler(filters.ALL, message_handler))
 
     def init_logger(self):
         config = {}
@@ -100,7 +107,7 @@ class CurryBot(object):
             Migrate(self)
         ]
 
-    def on_receive(self, bot, update):
+    async def on_receive(self, bot, update):
         if update.message:
             message = update.message
         elif update.edited_message:
@@ -115,9 +122,9 @@ class CurryBot(object):
         if message.caption:
             message.text = message.caption
 
-        self.on_receive_message(bot, message)
+        await self.on_receive_message(bot, message)
 
-    def on_receive_message(self, bot, message):
+    async def on_receive_message(self, bot, message):
         """
         Global message handler.
         Forwards the messages to the other handlers if applicable.
@@ -125,13 +132,13 @@ class CurryBot(object):
         """
         try:
             for handler in self._global_handlers:
-                self.message_handlers._call_handler(handler, bot, message)
-            self.message_handlers.call(bot, message)
+                await self.message_handlers._call_handler(handler, bot, message)
+            await self.message_handlers.call(bot, message)
         except:
             Logger.log_error('Exception while handling message')
             traceback.print_exc()
 
-    def on_receive_callback(self, bot, update):
+    async def on_receive_callback(self, bot, update):
         try:
             query = update.callback_query
             if query.message.reply_to_message:
@@ -142,22 +149,22 @@ class CurryBot(object):
                 text = query.data
 
             message = Message(-1, query.from_user, query.message.date, query.message.chat, text=text, reply_to_message=reply_to)
-            self.button_handlers.call(bot, message)
+            await self.button_handlers.call(bot, message)
         except:
             Logger.log_error('Exception while handling button event')
             traceback.print_exc()
 
-    def on_receive_tick(self, bot, job):
+    async def on_receive_tick(self, context: CallbackContext):
         try:
             time = datetime.now()
             text = time.strftime('%Y-%m-%d %H:%M:%S')
             messages = [Message(-1, None, time, Chat(chat_id, 'tick_group %s' % chat_id), text=text) for chat_id in Cache.list_chat_ids()]
-            self.tick_handlers.call(bot, messages)
+            await self.tick_handlers.call(context.bot, messages)
         except:
             Logger.log_error('Exception while handling tick')
             traceback.print_exc()
 
-    def update_cache(self):
+    async def update_cache(self, _: CallbackContext):
         Logger.log_debug('Updating cache')
 
         self.message_handlers.update()
@@ -183,12 +190,12 @@ class CurryBot(object):
         """
         Start the bot.
         """
-        self.updater.start_polling()
+        self.application.run_polling()
 
         # Set up the tick trigger
-        self.dispatcher.job_queue.run_repeating(self.on_receive_tick,
+        self.application.job_queue.run_repeating(self.on_receive_tick,
                 timedelta(minutes=1), first=timedelta(seconds= 60 - datetime.now().second))
-        self.dispatcher.job_queue.run_repeating(lambda b, j, self=self: self.update_cache(),
+        self.application.job_queue.run_repeating(self.update_cache,
                 timedelta(days=1), first=timedelta(hours= 24 - datetime.now().hour))
 
         Logger.log_info('%s started' % self.bot.first_name)

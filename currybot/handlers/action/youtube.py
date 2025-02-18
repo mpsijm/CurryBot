@@ -64,7 +64,7 @@ class YtPlaylistAppend(MessageHandler):
                 else:
                     Logger.log_error('Adding YouTube video to playlist failed with broken pipe', chat=chat_id)
 
-    def call(self, bot, message, reply_to, exclude):
+    async def call(self, bot, message, reply_to, exclude):
         if not message.text:
             raise Exception('An empty message is not a valid video ID')
         self._playlist_add(message.text, message.chat.id)
@@ -137,7 +137,7 @@ class YtPlaylistAppend(MessageHandler):
             'scopes': credentials.scopes
         }
 
-    def on_update(self, bot):
+    async def on_update(self, bot):
         credentials = self._credentials_to_dict(self.credentials)
         Cache.put(self.cache_key, str(credentials), encrypt=True)
 

@@ -24,8 +24,8 @@ class Handler(object):
         self.children.extend(new_children)
         self.on_children_update(new_children)
 
-    def update(self, bot):
-        self.on_update(bot)
+    async def update(self, bot):
+        await self.on_update(bot)
         for child in self.children:
             child.update(bot)
 
@@ -43,7 +43,7 @@ class Handler(object):
     def on_children_update(self, children):
         pass
 
-    def on_update(self, bot):
+    async def on_update(self, bot):
         pass
 
     def has_effect(self):
@@ -103,7 +103,7 @@ class Handler(object):
 
 
 class MessageHandler(Handler):
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude) -> list:
         raise Exception('Filter not implemented')
 
 

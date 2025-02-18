@@ -27,7 +27,7 @@ class IntFilter(MessageHandler):
         else:
             raise Exception('Unknown operator %s' % condition)
 
-    def call(self, bot, message, target, exclude):
+    async def call(self, bot, message, target, exclude):
         if message.text is None:
             raise FilterException()
 

@@ -20,7 +20,7 @@ class SendFlickr (RandomMessageHandler):
         self.key = api_key
         self.pack = pack
 
-    def on_update(self, bot):
+    async def on_update(self, bot):
         Logger.log_debug('Updating flickr cache')
         flickr_album = self.make_request('flickr.photosets.getPhotos', 'photoset', {'photoset_id': self.pack})
         name = flickr_album['title']
@@ -60,9 +60,9 @@ class SendFlickr (RandomMessageHandler):
         msg = '<a href="%s">📷</a>' % image['url']
         return (id, msg)
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         (id, text) = self.select_reply(exclude)
-        bot.send_message(chat_id=msg.chat.id, text=text, reply_to_message_id=target, parse_mode='HTML')
+        await bot.send_message(chat_id=msg.chat.id, text=text, reply_to_message_id=target, parse_mode='HTML')
         return [id]
 
     def has_effect(self):

@@ -38,7 +38,7 @@ class AbstractVote(MessageHandler):
             Cache.put([self.key, key], (new_val, users))
             return (True, new_val)
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         if not msg.text:
             raise Exception('You cannot vote on an empty message')
         res, val = self.apply_vote(msg)
@@ -159,7 +159,7 @@ class GetVote(AbstractVote):
     def _from_dict(cls, dict, children):
         return GetVote(dict['key'], children)
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         key, (val, users) = self.get_votes(msg)
         msg.text = msg.text.replace('%d', str(val), 1) if '%d' in msg.text else str(val)
         return self.propagate(bot, msg, target, exclude)

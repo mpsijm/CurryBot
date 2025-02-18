@@ -27,7 +27,7 @@ class BuildMessage(MessageHandler):
 
         return reply_text
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         msg.text = self.apply_message(msg, self.message)
         return self.propagate(bot, msg, target, exclude)
 

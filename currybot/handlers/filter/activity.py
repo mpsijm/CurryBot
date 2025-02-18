@@ -17,7 +17,7 @@ class ActivityFilter(MessageHandler):
         self.id = str(id)
         self.type = 'user' if is_user else 'chat'
 
-    def call(self, bot, msg, target, exclude):
+    async def call(self, bot, msg, target, exclude):
         time = datetime.now()
 
         cached = Cache.get([self.cache_key, self.type, self.id])
